@@ -4,19 +4,24 @@ import scipy as sp
 from scipy import sparse  
 import osqp 
 
+def python_matrix_to_julia_string(matrix):
+    return "[" + "; ".join(
+        " ".join(str(val) for val in row) for row in matrix
+    ) + "]"
+
 class adaptiveKMPC:
     def __init__(self,  edmd, Q: np.ndarray, Qf: np.ndarray, R: np.ndarray, r: np.ndarray, H, ul: np.ndarray, uu: np.ndarray) -> None:
         self.edmd = edmd
         self.p, self.m = edmd.get_dims()
         self.H = H 
-        self.N = r.shape[1]
+        self.N = r.shape[0]
         
         # build weight matrices for the augmented dynamics
-        Qf = np.diag(np.concatenate((Qf, np.zeros(self.m))))                
+        Qf = np.diag(np.concatenate((Qf, np.zeros(self.m))))
         Q = np.concatenate((Q, np.zeros(self.m)))
-        self.Q_bold = np.diag(np.repeat(Q, H))
+        self.Q_bold = np.diag(np.tile(Q, H))
         self.Q_bold[-self.p-self.m:,-self.p-self.m:] = Qf 
-        self.R_bold = np.diag(np.repeat(R, H))
+        self.R_bold = np.diag(np.tile(R, H))
         
         self.Psi_r = self.edmd.linear_model.observables.fit(r)        # required before evaluating the observables         
         self.Psi_r = self.edmd.linear_model.observables.transform(r).T
@@ -90,18 +95,21 @@ class adaptiveKMPC:
         z0 =  self.edmd.linear_model.observables.transform(x0)
 
         A,B = self.edmd.fit()
+        
         Psi_r = np.zeros((self.p, self.H))
         for i in range(k,k+self.H):
-            if i <= self.N:
+            if i <= self.N-1:
                 Psi_r[:,i-k] = self.Psi_r[:,i]                     
             else: 
                 Psi_r[:,i-k] = self.Psi_r[:,-1]                     
+                
         P,q = self.build_quadratic_cost(A, B, Psi_r, np.squeeze(z0), self.u_prev)
-        
+
         ul_bold = self.ul_bold_const - np.repeat(self.u_prev, self.H)
         uu_bold = self.uu_bold_const - np.repeat(self.u_prev, self.H)
         
         P = sparse.csc_matrix(P)
+
         self.solver.update(Px=sparse.triu(P).data, q = q, l = ul_bold, u = uu_bold, Ax = self.C_Delta.data)
 
         delta_u_bold = self.solver.solve().x

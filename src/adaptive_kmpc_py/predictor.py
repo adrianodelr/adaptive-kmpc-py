@@ -13,12 +13,13 @@ class DataRingBuffer:
     
     def update_buffer(self, x: np.ndarray, u: np.ndarray, t: np.ndarray) -> None:
         assert x.shape[0] == self.n_states, f"x needs to be of dimension {self.n_states} x N"
-        assert u.shape[0] == self.n_inputs, f"u needs to be of dimension {self.n_states} x N"         
+        assert u.shape[0] == self.n_inputs, f"u needs to be of dimension {self.n_states} x N-1"         
         assert len(t.shape) == 1, "time measurements need to be one dimensional" 
         for i in range(t.shape[0]):
             self.t.append(t[i])                
             for j in range(self.n_states):
-                self.X[j].append(x[j,i])            
+                self.X[j].append(x[j,i])
+        for i in range(u.shape[1]):            
             for j in range(self.n_inputs):
                 self.U[j].append(u[j,i])            
 
