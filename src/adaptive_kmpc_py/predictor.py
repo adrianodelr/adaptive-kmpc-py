@@ -29,12 +29,6 @@ class DataRingBuffer:
     def get_U(self) -> np.ndarray:
         return np.array(list(self.U))
                 
-    # def get_X(self) -> list[collections.deque[float]]:
-    #     return list(self.X)
-    
-    # def get_U(self) -> list[collections.deque[float]]:
-    #     return list(self.U)
-
 class EDMD:
     def __init__(self, n_states: int, n_inputs: int, N: int, observables: pk.observables.CustomObservables) -> None:
         self.linear_model = pk.Koopman(observables=observables, regressor=pk.regression.EDMDc())
@@ -50,14 +44,3 @@ class EDMD:
     def get_dims(self) -> tuple[int, int]:
         return self.p,self.m
     
-def build_observables_dummy():
-    
-    observables = [lambda x: np.sin(x), lambda x: np.cos(x)]
-    observable_names = [
-        lambda s: f"sin{s}",
-        lambda s: f"cos{s}",
-    ]
-
-    obs = pk.observables.CustomObservables(observables, observable_names=observable_names)
-    return obs 
-
