@@ -1,6 +1,7 @@
 import pykoopman as pk
 import numpy as np
-import collections      # https://stackoverflow.com/questions/4151320/efficient-circular-buffer
+from numba import njit
+import collections      
 
 class DataRingBuffer:
     def __init__(self, n_states: int, n_inputs: int, N: int) -> None:
@@ -21,26 +22,32 @@ class DataRingBuffer:
                 self.X[j].append(x[j,i])
         for i in range(u.shape[1]):            
             for j in range(self.n_inputs):
-                self.U[j].append(u[j,i])            
-
+                self.U[j].append(u[j,i])
+                  
     def get_X(self) -> np.ndarray:
-        return np.array(list(self.X))
-    
+        return np.stack(self.X, axis=0)
+
     def get_U(self) -> np.ndarray:
-        return np.array(list(self.U))
-                
+        return np.stack(self.U, axis=0)
+
 class EDMD:
     def __init__(self, n_states: int, n_inputs: int, N: int, observables: pk.observables.CustomObservables) -> None:
         self.linear_model = pk.Koopman(observables=observables, regressor=pk.regression.EDMDc())
         self.buffer = DataRingBuffer(n_states, n_inputs, N)
         self.p = len(observables.observables)-1+n_states            # identity is included by default as first observable  
         self.m = n_inputs
-        
+ 
     def fit(self) -> tuple[np.ndarray, np.ndarray]:
-        self.linear_model.fit(x=self.buffer.get_X().T, u=self.buffer.get_U().T)
-        return np.array(self.linear_model.A),np.array(self.linear_model.B) 
+        X = self.buffer.get_X().T
+        U = self.buffer.get_U()
+        Z = self.linear_model.observables.transform(X).T
+        Z_plus = Z[:,1:]
+        Z = Z[:,:-1]        
+        Omega = np.vstack((Z,U))        
+        K, _, _, _ = np.linalg.lstsq(Omega.T, Z_plus.T, rcond=None)
+        K = K.T
+        return K[:,0:self.p],K[:,self.p:] 
         
-
     def get_dims(self) -> tuple[int, int]:
         return self.p,self.m
     
