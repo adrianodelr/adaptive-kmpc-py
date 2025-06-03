@@ -14,9 +14,7 @@ class adaptiveKMPC:
         # build weight matrices for the augmented dynamics
         Qf = np.concatenate((Qf, np.zeros(self.m)))
         Q = np.concatenate((Q, np.zeros(self.m)))
-        Q_bold = sparse.block_diag([np.diag(Q)]*H, format='csc')
-        self.Q_bold_diag = Q_bold.diagonal()
-        self.Q_bold_diag[-self.p-self.m:] = Qf        
+        self.Q_bold_diag = np.concatenate([np.tile(Q, H-1), Qf])        
         self.R_bold = sparse.block_diag([np.diag(R)]*H, format='csc')
         
         self.edmd.linear_model.observables.fit(r)        # required before evaluating the observables         

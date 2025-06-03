@@ -13,9 +13,11 @@ class DataRingBuffer:
         self.N = N 
     
     def update_buffer(self, x: np.ndarray, u: np.ndarray, t: np.ndarray) -> None:
+        
         assert x.shape[0] == self.n_states, f"x needs to be of dimension {self.n_states} x N"
         assert u.shape[0] == self.n_inputs, f"u needs to be of dimension {self.n_states} x N-1"         
         assert len(t.shape) == 1, "time measurements need to be one dimensional" 
+        
         for i in range(t.shape[0]):
             self.t.append(t[i])                
             for j in range(self.n_states):
@@ -25,10 +27,11 @@ class DataRingBuffer:
                 self.U[j].append(u[j,i])
                   
     def get_X(self) -> np.ndarray:
-        return np.stack(self.X, axis=0)
-
+        return np.array([list(x) for x in self.X])
+    
     def get_U(self) -> np.ndarray:
-        return np.stack(self.U, axis=0)
+        return np.array([list(u) for u in self.U])
+
 
 class EDMD:
     def __init__(self, n_states: int, n_inputs: int, N: int, observables: pk.observables.CustomObservables) -> None:
