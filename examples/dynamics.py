@@ -15,8 +15,8 @@ def forward_dynamics_single_pendulum(x, u, model, g=9.81):
     return np.concatenate(([theta1_dot],omega1_dot))
 
 def forward_dynamics_double_pendulum(x, u, model, g=9.81):
-    l1,lcom1,m1,I1=model.l[1],model.lcom[1],model.m[1],model.I[1]
-    l2,lcom2,m2,I2=model.l[2],model.lcom[2],model.m[2],model.I[2]
+    l1,lcom1,m1,I1=model.l[0],model.lcom[0],model.m[0],model.I[0]
+    l2,lcom2,m2,I2=model.l[1],model.lcom[1],model.m[1],model.I[1]
     q=x[0:2]
     v=x[2:4]
     m11 = I1 + I2 + l1**2*m2 + 2*l1*lcom2*m2*np.cos(q[1])  
@@ -26,13 +26,13 @@ def forward_dynamics_double_pendulum(x, u, model, g=9.81):
     M = np.block([[m11, m12], [m21, m22]])  # inertia matrix   
     c1 = -2*l1*lcom2*m2*np.sin(q[1])*v[0]*v[1] - l1*lcom2*m2*np.sin(q[1])*v[1]**2
     c2 = l1*lcom2*m2*np.sin(q[1])*v[0]**2
-    C = np.vstack([c1, c2])                 # coriolis + centrigual forces 
+    C = np.array([c1, c2])                 # coriolis + centrigual forces 
     g1 = g*lcom1*m1*np.sin(q[0]) + g*m2*(l1*np.sin(q[0]) + lcom2*np.sin(sum(q)))    
     g2 = g*m2*lcom2*np.sin(sum(q))
-    G = np.vstack([g1, g2])                 # gravity vector
+    G = np.array([g1, g2])                 # gravity vector
     θd = v
     ωd = np.linalg.solve(M, (u - C - G))
-    return np.vstack([θd, ωd])
+    return np.concatenate((θd, ωd))
 
 
 def rk4(x,u,h,dynamics):
