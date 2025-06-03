@@ -10,6 +10,7 @@ The controller allows approximating nonlinear system dynamics from experimental 
 The algorithm is explained in depth in the linked paper, and verified with real-system control experiments on a 1R and 2R robot system. To ensure understanding of the code, variable names are chosen according to the notation used in the paper.  
 
 The following process schematic may help in getting a quick overview of the algorithm and the code.  
+
 <img src="docs/adaptive_KMPC_scheme.png" alt="adaptive_KMPC_scheme" width="1000"/>
 
 
