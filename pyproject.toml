@@ -1,0 +1,26 @@
+[project]
+name = "adaptive-kmpc-py"
+version = "0.1.0"
+description = "A Python implementation of the adaptive Koopman model predictive control algorithm"
+authors = [
+    {name = "Adriano del Río"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "numpy (==1.26.0)",
+    "scipy (==1.11.2)",
+    "osqp (==1.0.4)",
+    "numba (==0.61.2)",
+    "pykoopman (==1.1.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.5"
+
