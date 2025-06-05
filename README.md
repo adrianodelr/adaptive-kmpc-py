@@ -21,4 +21,23 @@ random controls and recording the system response, which is denoted as `precedin
 - Casting the linear model in a `convex quadratic program` along with some reference trajectory, constraints, and feedback on the current state allows solving for an optimal control input that is applied to the system. 
 - The system response, along with the applied control are fed back into the circular buffer, such that the model adapts to the current operating point.  
 
+### Installation
+
+You can install the latest version from GitHub:
+```bash 
+pip install git+https://github.com/adrianodelr/adaptive-kmpc-py.git
+``` 
+Or via the package manager:
+```bash 
+pip install adaptive-kmpc-py
+``` 
+### Basic Usage 
+
+For understanding basic usage, you can have a look at the Jupyter notebooks:
+
+- [Reference tracking 1R example](https://github.com/adrianodelr/adaptive-kmpc-py/blob/main/examples/reference_tracking_1R.ipynb) 
+- [Reference tracking 2R example](https://github.com/adrianodelr/adaptive-kmpc-py/blob/main/examples/reference_tracking_2R.ipynb) 
+
+Both demonstrate simulated tracking control of serial robots. 
+
 
