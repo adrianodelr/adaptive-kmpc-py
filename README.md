@@ -19,7 +19,7 @@ random controls and recording the system response, which is denoted as `precedin
 - Data are then used to fill a `circular buffer`, operatin under *first-in-first-out* logic. 
 - Subsequently, Extended Dynamic Mode Decomposition is carried out on the buffer data (for more detailed explanation you can consult the paper), leading to a `linear model` in the discrete time domain.
 - Casting the linear model in a `convex quadratic program` along with some reference trajectory, constraints, and feedback on the current state allows solving for an optimal control input that is applied to the system. 
-- The system response, along with the applied control are fed back into the circular buffer, such that the model adapts to the current operating point.  
+- The applied controls and the measured system response are fed back into the circular buffer, such that the model adapts to the current operating point.  
 
 ### Installation
 
@@ -31,7 +31,7 @@ Or via the package manager:
 ```bash 
 pip install adaptive-kmpc-py
 ``` 
-### Basic Usage 
+### Usage 
 
 For understanding basic usage, you can have a look at the Jupyter notebooks:
 
